@@ -1,5 +1,9 @@
 package Lexical;
 
+/**
+ * The Class Word is a data structure for JavaLex's output.
+ */
+
 public class Word {
 	private int line;
 	private int row;

@@ -1,0 +1,29 @@
+package Lexical;
+
+public class Valid {
+public boolean isValid(String FilePath) {
+	String allowType = ".txt";
+	if (null == FilePath || "".equals(FilePath)) {
+		return false;
+	}
+	if(FilePath.indexOf(allowType) > -1) {
+		return true;
+	}else {
+		return false;
+	}
+}
+}
+class Valid {
+public boolean isValid(String FilePath) { 
+		String allowType = ".txt";
+         {  
+            return false; 
+        }   
+            if (FilePath.indexOf(allowType) > -1) {  
+                return true;  
+            }
+            else {
+            return false;
+            }
+    }  
+}

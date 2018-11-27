@@ -1,0 +1,161 @@
+package Lexical;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+
+
+
+public class Lexer {
+
+public static void main(String[] args) {
+// TODO Auto-generated method stub
+String FilePath = "E://a.txt";
+Valid valid = new Valid();
+boolean isValid =valid.isValid(FilePath);
+if(isValid) {
+Read read = new Read();
+String str = read.readTxt(FilePath);
+Tool tool = new Tool();
+tool.tool1(str);
+tool.tool2(str);
+tool.tool3(str);
+tool.tool4(str);
+tool.tool5(str);
+tool.tool6(str);
+tool.tool7(str);
+} else {
+System.out.println("该文件不是txt文件，无法识别！");
+} 
+}
+
+
+}
+
+
+class Tool { 
+public void tool1(String str) {
+//识别关键字：if、int、for、while、do、return、break、continue；
+String regex = "(if|int|for|while|do|return|break|continue)";
+//1.if、int、for、while、do、return、break、continue；
+//单词种别码为1。
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(str);
+while(matcher.find()) {
+System.out.println("（"+"1，"+"“"+matcher.group()+"”"+"）");//（2，”main”）
+}
+}
+
+public void tool2(String str) {
+//识别标识符
+String regex = "[A-Za-z_$]+[A-Za-z_$\\d]";
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(str);
+while(matcher.find()) {
+System.out.println("（"+"2，"+"“"+matcher.group()+"”"+"）");
+}
+}
+
+public void tool3(String str) {
+//常数为无符号整形数
+String regex = "[0-9][0-9]*";
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(str);
+while(matcher.find()) {
+System.out.println("（"+"3，"+"“"+matcher.group()+"”"+"）");
+}
+}
+
+public void tool4(String str) {
+//运算符包括：+、-、*、/、=、、<、=、<=、!= 
+String regex1 = "[+|-|*|/]";
+String regex2 = "(?<!(<|!))=";//匹配等号，过滤"<="和"!="中的等号
+String regex3 = "(<)(?!=)";//匹配"<"，过滤"<="中的“<”
+String regex4 = "(<|!|！)=";
+Pattern pattern1 = Pattern.compile(regex1);
+Pattern pattern2 = Pattern.compile(regex2);
+Pattern pattern3 = Pattern.compile(regex3);
+Pattern pattern4 = Pattern.compile(regex4);
+Matcher matcher1 = pattern1.matcher(str);
+Matcher matcher2 = pattern2.matcher(str);
+Matcher matcher3 = pattern3.matcher(str);
+Matcher matcher4 = pattern4.matcher(str);
+while(matcher1.find()) {
+System.out.println("（"+"4，"+"“"+matcher1.group()+"”"+"）");
+}
+while(matcher2.find()) {
+System.out.println("（"+"4，"+"“"+matcher2.group()+"”"+"）");
+}
+while(matcher3.find()) {
+System.out.println("（"+"4，"+"“"+matcher3.group()+"”"+"）");
+}
+while(matcher4.find()) {
+System.out.println("（"+"4，"+"“"+matcher4.group()+"”"+"）");
+}
+}
+
+public void tool5(String str) {
+//匹配分隔符包括：,、;、{、}、(、)
+String regex = "(\\,|\\;|\\{|\\}|\\(|\\))";
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(str);
+while(matcher.find()) {
+System.out.println("（"+"5，"+"“"+matcher.group()+"”"+"）");
+}
+}
+
+public void tool6(String str) {
+//匹配7.ID=letter(letter | digit)*
+String regex = "[A-Za-z]+[A-Za-z\\d]?";
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(str);
+while(matcher.find()) {
+System.out.println("（"+"6，"+"“"+matcher.group()+"”"+"）");
+}
+}
+
+public void tool7(String str) {
+//匹配7.ID=letter(letter | digit)*
+String regex = "[0-9]{1,}";
+Pattern pattern = Pattern.compile(regex);
+Matcher matcher = pattern.matcher(str);
+while(matcher.find()) {
+System.out.println("（"+"7，"+"“"+matcher.group()+"”"+"）");
+}
+}
+
+}
+
+
+
+
+
+class Read {
+public String readTxt(String filePath) { 
+String str = null;
+BufferedReader reader = null;
+try {
+reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), "UTF-8")); 
+// 指定读取文件的编码格式，要和写入的格式一致，以免出现中文乱码, 
+while ((str = reader.readLine()) != null) {
+return str;
+}
+} catch (FileNotFoundException e) {
+e.printStackTrace();
+} catch (IOException e) {
+e.printStackTrace();
+} finally {
+try {
+reader.close();
+} catch (IOException e) {
+e.printStackTrace();
+}
+}
+return str; 
+}
+}

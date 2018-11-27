@@ -6,10 +6,6 @@ public class Word {
 	private int index;
 	private int type;
 	private String value;
-	
-	/**
-	 * Here is all types that a Word object could be.
-	 */
 	public static final int UNDEFINED = 0;
 	public static final int KEYWORD = 1;
 	public static final int IDENTIFIER = 2;
@@ -105,13 +101,9 @@ public class Word {
 		this.value = value;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
-		return "Word [line=" + line + ", row=" + row + ", index=" + index + ", type=" + type
-				+ ", value=\"" + value + "\"]";
+		return "Word [ type=" + type + ", value=\"" + value + "\"]";
 	}
 	
 	

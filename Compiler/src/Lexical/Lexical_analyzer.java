@@ -15,8 +15,8 @@ import java.util.Scanner;
 public class Lexical_analyzer {
 	
 	private int line = 0;
-	private int rowInParsingLine = 0;	// point to the begin row of a word
-	private int nextRow = 0;	// point to the row of NEXT CHARACTER
+	private int rowInParsingLine = 0;	
+	private int nextRow = 0;	
 	private int index = 0;
 	private String nextChar = null;
 	private InputStream source = null;
@@ -29,7 +29,7 @@ public class Lexical_analyzer {
 	private static final String OPERATOR_LIST_PATH = "./res/operator.txt";
 	private static final HashSet<String> delimiters;
 	private static final String DELIMITER_LIST_PATH = "./res/delim.txt";
-	private static final String NUM_CHAR = "[\\d]";
+	private static final String DEC_CHAR = "[\\d]";
 	private static final String OCT_CHAR = "[0-7]";
 	private static final String HEX_CHAR = "[0-9a-fA-F]";
 	private static final String INT_SUFFIX = "[lL]";
@@ -37,11 +37,6 @@ public class Lexical_analyzer {
 	private static final String STRING_DELIMITER = "[\"\']";	
 	private static final String IDENTIFIER_CHAR = "[_a-zA-Z]";
 
-	/**
-	 * 
-	 * @param source - the source file
-	 * @throws FileNotFoundException
-	 */
 	static {
 		keywords = new HashSet<String>();
 		Scanner tempScanner = null;
@@ -83,10 +78,7 @@ public class Lexical_analyzer {
 	public Lexical_analyzer(File source) throws FileNotFoundException{
 		initWithFile(source);
 	}
-	/**
-	 * 
-	 * @param source - the String that contains source code
-	 */
+
 	public Lexical_analyzer(String source) {
 		initWithString(source);
 	}
@@ -111,11 +103,6 @@ public class Lexical_analyzer {
 		this.br = new BufferedReader(new InputStreamReader(this.source, Charset.forName("UTF-8")));
 	}
 	
-	/**
-	 * 
-	 * @return a Word object or null when no more word
-	 */
-	
 	public Word nextWord() {
 		Word word  = this.getNextWord();
 		while (word == null) {
@@ -126,13 +113,6 @@ public class Lexical_analyzer {
 		}
 		return word;
 	}
-	
-	/**
-	 * 
-	 * @return : a Word object or null when scanner meet blank character 
-	 * 
-	 * use nextWord() to filter null out.
-	 */
 	public Word getNextWord() {
 		this.rowInParsingLine = nextRow-1;
 		if (this.rowInParsingLine < 0)
@@ -147,10 +127,10 @@ public class Lexical_analyzer {
 		Word word = null;
 		String value = "";
 		
-		if (nextChar.matches(NUM_CHAR)) {
+		if (nextChar.matches(DEC_CHAR)) {
 			value = value.concat(nextChar);
 			
-			if (nextChar.equals("0")) {	// hex, oct(real) or 0(real)
+			if (nextChar.equals("0")) {	// hex, oct or dec
 				nextChar = getNextChar();
 				
 				if (nextChar.toLowerCase().equals("x")) {	// hex
@@ -159,7 +139,7 @@ public class Lexical_analyzer {
 						value = value.concat(nextChar);
 					}
 					
-					if (nextChar.matches(INT_SUFFIX)) {	// end: set nextChar null
+					if (nextChar.matches(INT_SUFFIX)) {	
 						value = value.concat(nextChar);
 						nextChar = null;
 					}
@@ -172,23 +152,23 @@ public class Lexical_analyzer {
 						value = value.concat(nextChar);
 					}
 					
-					if (nextChar.matches(NUM_CHAR)) {
-						value = value.concat(this.nextChar);
-						while ((nextChar = getNextChar()).matches(NUM_CHAR)) {
+					if (nextChar.matches(DEC_CHAR)) {
+						value = value.concat(this.nextChar); 
+						while ((nextChar = getNextChar()).matches(DEC_CHAR)) {
 							value = value.concat(nextChar);
 						}
 					}
 					
 					if (nextChar.equals(".")) {	// real or other number
 						value = value.concat(nextChar);
-						while ((nextChar = getNextChar()).matches(NUM_CHAR)) {
+						while ((nextChar = getNextChar()).matches(DEC_CHAR)) {
 							value = value.concat(nextChar);
 						}
-						if (nextChar.matches(REAL_SUFFIX)) {	// end: set nextChar null
+						if (nextChar.matches(REAL_SUFFIX)) {	
 							value = value.concat(nextChar);
 							nextChar = null;
 						}
-					} else if (nextChar.matches(REAL_SUFFIX) || nextChar.matches(INT_SUFFIX)) {	// oct; end: set nextChar null
+					} else if (nextChar.matches(REAL_SUFFIX) || nextChar.matches(INT_SUFFIX)) {	// oct
 						value = value.concat(nextChar);
 						nextChar = null;
 					}	
@@ -196,21 +176,21 @@ public class Lexical_analyzer {
 				} else {	// 0
 					if (nextChar.equals(".")) {	// real
 						value = value.concat(nextChar);
-						while ((nextChar = getNextChar()).matches(NUM_CHAR)) {
+						while ((nextChar = getNextChar()).matches(DEC_CHAR)) {
 							value = value.concat(nextChar);
 						}
-						if (nextChar.matches(REAL_SUFFIX)) {	// end: set nextChar null
+						if (nextChar.matches(REAL_SUFFIX)) {	
 							value = value.concat(nextChar);
 							nextChar = null;
 						}
-					} else if (nextChar.matches(REAL_SUFFIX) || nextChar.matches(INT_SUFFIX)) {	// 0; end: set nextChar null
+					} else if (nextChar.matches(REAL_SUFFIX) || nextChar.matches(INT_SUFFIX)) {	// 0
 						value = value.concat(nextChar);
 						nextChar = null;
 					}	
 					word = new Word(beginLine, this.rowInParsingLine, beginIndex, Word.CONSTANT, value);
 				}
 			} else {	// other numbers
-				while ((this.nextChar = getNextChar()).matches(NUM_CHAR)) {
+				while ((this.nextChar = getNextChar()).matches(DEC_CHAR)) {
 					value = value.concat(this.nextChar);
 				}
 				
@@ -218,8 +198,8 @@ public class Lexical_analyzer {
 					value = value.concat(this.nextChar);
 					this.nextChar = getNextChar();
 					
-					if (this.nextChar.matches(NUM_CHAR)) {
-						while (this.nextChar.matches(NUM_CHAR)) {
+					if (this.nextChar.matches(DEC_CHAR)) {
+						while (this.nextChar.matches(DEC_CHAR)) {
 							value = value.concat(this.nextChar);
 							this.nextChar = getNextChar();
 						}
@@ -248,7 +228,7 @@ public class Lexical_analyzer {
 			}
 			
 			if (this.nextChar.equals(delimiter)) {
-				value = value.concat(this.nextChar);	// String end: set nextChar null
+				value = value.concat(this.nextChar);	
 			}
 			this.nextChar = null;
 			word = new Word(beginLine, this.rowInParsingLine, beginIndex, Word.CONSTANT, value);
@@ -266,7 +246,7 @@ public class Lexical_analyzer {
 					this.nextChar = getNextChar();
 				}
 				
-				this.nextChar = null;	// comment end: set nextChar null
+				this.nextChar = null;	
 				word = new Word(beginLine, this.rowInParsingLine, beginIndex, Word.COMMENT, value);
 				
 			} else if (value.equals("/*")) {	// block comment
@@ -280,7 +260,7 @@ public class Lexical_analyzer {
 					
 					if (this.nextChar.equals("/")) {
 						end = end.concat(this.nextChar);
-						if (end.equals("*/")) {	// comment end: set nextChar null
+						if (end.equals("*/")) {	
 							value = value.concat(this.nextChar);
 							this.nextChar = null;
 							break;
@@ -291,13 +271,13 @@ public class Lexical_analyzer {
 				
 				word = new Word(beginLine, this.rowInParsingLine, beginIndex, Word.COMMENT, value);
 			} else if (value.equals(".")) {
-				if (this.nextChar.matches(NUM_CHAR)) {
-					while (this.nextChar.matches(NUM_CHAR)) {
+				if (this.nextChar.matches(DEC_CHAR)) {
+					while (this.nextChar.matches(DEC_CHAR)) {
 						value = value.concat(this.nextChar);
 						this.nextChar = getNextChar();
 					}
 					
-					if (this.nextChar.matches(REAL_SUFFIX)) {	// end: set nextChar null
+					if (this.nextChar.matches(REAL_SUFFIX)) {	
 						value = value.concat(this.nextChar);
 						this.nextChar = null;
 					}
@@ -316,7 +296,7 @@ public class Lexical_analyzer {
 			}
 		} else if (this.nextChar.matches(IDENTIFIER_CHAR)) {
 			value = value.concat(this.nextChar);
-			while ((this.nextChar = getNextChar()).matches(IDENTIFIER_CHAR) || this.nextChar.matches(NUM_CHAR)) {
+			while ((this.nextChar = getNextChar()).matches(IDENTIFIER_CHAR) || this.nextChar.matches(DEC_CHAR)) {
 				value = value.concat(this.nextChar);
 			}
 			
@@ -331,16 +311,7 @@ public class Lexical_analyzer {
 			
 		return word;
 	}
-	
-	
-	/**
-	 * 
-	 * @return : the next character
-	 * 
-	 * return "" when there is no more character.
-	 * 
-	 */
-	
+
 	public String getNextChar() {
 		String ch = null;
 		try {
@@ -353,7 +324,6 @@ public class Lexical_analyzer {
 				return "";
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -369,10 +339,6 @@ public class Lexical_analyzer {
 	}
 	
 	public boolean hasNextWord() {
-//		if ((this.parsingLine != null) || this.scanner.hasNext())
-//			return true;
-//		else
-//			return false;
 		return this.hasNextChar;
 	}
 
@@ -404,13 +370,10 @@ public class Lexical_analyzer {
 			return false;
 	}
 	
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		
 		try {
-			Lexical_analyzer analyzer = new Lexical_analyzer(new File("res/test.txt"));
+			Lexical_analyzer analyzer = new Lexical_analyzer(new File("res/test.java"));
 			while (analyzer.hasNextWord()) {
 				System.out.println(analyzer.nextWord());
 			}
